@@ -19,4 +19,10 @@ final class RunnerTest extends TestCase
         $runner = Runner::fromFileLocation(__DIR__ . '/Fixtures/fake_composer.json', __DIR__ . '/Fixtures/fake_composer.lock');
         $this->assertSame(['webmozart/path-util_2' => 'webmozart/path-util_2'], $runner->run());
     }
+
+    public function testItCanFindUnusedDependenciesOutsideOfDev() : void
+    {
+        $runner = Runner::fromFileLocation(__DIR__ . '/Fixtures/fake_composer_2.json', __DIR__ . '/Fixtures/fake_composer_2.lock');
+        $this->assertSame(['webmozart/path-util_2' => 'webmozart/path-util_2'], $runner->run());
+    }
 }

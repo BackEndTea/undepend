@@ -17,12 +17,13 @@ use Undepend\Runner;
     $result = Runner::fromFileLocation($composerJson, $copmoserLock)->run();
 
     if ($result === []) {
+        echo 'No orphaned dependencies found';
         exit(0);
     }
 
     foreach ($result as $unused) {
         echo sprintf(
-            'Found unused dependency: "%s"%s',
+            'Found orphaned dependency: "%s"%s',
             $unused,
             PHP_EOL
         );

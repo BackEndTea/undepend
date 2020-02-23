@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Undepend;
 
-use Exception;
 use Undepend\Graph\Dependency;
 use Undepend\Graph\DependencyTree;
 use Undepend\Graph\Package;
 use function array_keys;
 use function array_merge;
-use function file_get_contents;
 use function json_decode;
 use const JSON_THROW_ON_ERROR;
 
 final class Runner
 {
+    private const DEFAULT_JSON_DEPTH = 512;
+
     /** @var string */
     private $composerJson;
     /** @var string */
@@ -29,14 +29,10 @@ final class Runner
 
     public static function fromFileLocation(string $json, string $lock) : self
     {
-        $json = file_get_contents($json);
-        $lock = file_get_contents($lock);
-
-        if ($json === false || $lock === false) {
-            throw new Exception('Unable to read the composer.json or lock file.');
-        }
-
-        return new self($json, $lock);
+        return new self(
+            FileSystem::getFile($json),
+            FileSystem::getFile($lock)
+        );
     }
 
     /**
@@ -45,7 +41,7 @@ final class Runner
     public function run() : array
     {
         /** @var array{require: array<string,string>, require-dev: array<string,string>} $json */
-        $json     = json_decode($this->composerJson, true, 512, JSON_THROW_ON_ERROR);
+        $json     = json_decode($this->composerJson, true, self::DEFAULT_JSON_DEPTH, JSON_THROW_ON_ERROR);
         $packages = array_keys(array_merge($json['require'] ?? [], $json['require-dev'] ?? []));
 
         $graph = new DependencyTree();
@@ -60,7 +56,7 @@ final class Runner
          *     packages-dev: array<array{name:string, require:array<string,string>}>
          * } $locked
          */
-        $locked         = json_decode($this->composerLock, true, 512, JSON_THROW_ON_ERROR);
+        $locked         = json_decode($this->composerLock, true, self::DEFAULT_JSON_DEPTH, JSON_THROW_ON_ERROR);
         $lockedPackages = array_merge($locked['packages'] ?? [], $locked['packages-dev'] ?? []);
 
         foreach ($lockedPackages as $lockedPackage) {
