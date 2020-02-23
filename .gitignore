@@ -1,0 +1,6 @@
+.idea/
+composer.lock
+vendor/
+.phpcs.cache
+infection.log
+cov/
