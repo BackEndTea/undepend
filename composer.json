@@ -1,5 +1,5 @@
 {
-    "name": "backentea/undepend",
+    "name": "backendtea/undepend",
     "description": "Detects orphaned dependencies in your composer.json",
     "type": "library",
     "license": "MIT",
